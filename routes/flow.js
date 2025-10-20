@@ -9,7 +9,7 @@ const FLOW_CONFIG = {
     apiKey: process.env.FLOW_API_KEY || '39DF8158-8118-4CE5-8566-4E4ALD83864B',
     secretKey: process.env.FLOW_SECRET_KEY || '32e21ed1cc7ca36114f033dd4b693d624603405b',
     apiURL: process.env.FLOW_API_URL || 'https://www.flow.cl/api', 
-    baseURL: process.env.BASE_URL || 'http://localhost:3001'
+    baseURL: process.env.BASE_URL || 'https://aromas-cafe.onrender.com'
 };
 
 // Función para generar firma HMAC-SHA256
