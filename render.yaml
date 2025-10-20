@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: aromas-cafe
+    env: node
+    plan: free
+    buildCommand: |
+      npm install
+      psql $DATABASE_URL -f database/init.sql
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aromas-cafe-db
+          property: connectionString
+
+databases:
+  - name: aromas-cafe-db
+    plan: free
+    databaseName: aromas_cafe
+    user: aromas_user

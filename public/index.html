@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AromasCafé☕ - Hecho con amor💗</title>
+    <link rel="icon" type="image/png" href="./img/icons/favicon2.png">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <h1><i class="fas fa-coffee"></i> AromasCafé</h1>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar granos, accesorios...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-btn" title="Cambiar tema">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="cartBtn" class="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cartCount" class="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h2 class="hero-title">Descubre el Auténtico Sabor del Café</h2>
+                    <p class="hero-subtitle">Granos seleccionados, tostados a la perfección para los verdaderos amantes del café</p>
+                </div>
+            </section>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <h3><i class="fas fa-filter"></i> Categorías</h3>
+                <div class="filter-buttons" id="categoryFilters">
+                    <button class="filter-btn active" data-category="">Todos</button>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <section class="products-section">
+                <div class="loading" id="loadingProducts">
+                    <i class="fas fa-coffee fa-spin"></i> Cargando productos...
+                </div>
+                <div class="products-grid" id="productsGrid">
+                    <!-- Los productos se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal del Carrito -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-shopping-cart"></i> Tu Pedido de Café</h2>
+                <span class="close" id="closeCartModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="cartItems" class="cart-items">
+                    <!-- Los items del carrito se cargarán aquí -->
+                </div>
+                <div class="cart-total">
+                    <strong>Total: $<span id="cartTotal">0</span></strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="clearCart" class="btn btn-secondary">Vaciar Carrito</button>
+                <button id="checkoutBtn" class="btn btn-primary">Continuar con el Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checkout -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Finalizar Compra</h2>
+                <span class="close" id="closeCheckoutModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="checkoutForm">
+                    <h3>Información del Cliente</h3>
+                    <div class="form-group">
+                        <label for="customerName">Nombre Completo</label>
+                        <input type="text" id="customerName" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Email</label>
+                        <input type="email" id="customerEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Teléfono</label>
+                        <input type="tel" id="customerPhone" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAddress">Dirección</label>
+                        <textarea id="customerAddress" name="direccion" rows="3"></textarea>
+                    </div>
+                    
+                    <h3>Resumen del Pedido</h3>
+                    <div id="checkoutSummary" class="checkout-summary">
+                        <!-- Resumen del pedido -->
+                    </div>
+                    <div class="checkout-total">
+                        <strong>Total a Pagar: $<span id="checkoutTotal">0</span></strong>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelCheckout" class="btn btn-secondary">Cancelar</button>
+                <button id="confirmOrder" class="btn btn-primary">
+                    <i class="fas fa-credit-card"></i> Pagar con Flow
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado de Pago -->
+    <div id="paymentResultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="paymentResultTitle">Resultado del Pago</h2>
+                <span class="close" id="closePaymentResultModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="paymentResultContent">
+                    <!-- Contenido del resultado -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="backToShop" class="btn btn-primary">Volver a la Tienda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificaciones -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- <section class="hero-image">
+    <img src="./img/slider-image.jpg" alt="Café fresco y granos de café seleccionados - AromasCafé">
+</section> -->
+
+<!-- Sección de Categorías -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="categories-title">Elige tu categoría favorita</h2>
+        <div class="categories-grid">
+            <!-- Cápsula -->
+            <div class="category-card">
+                <div class="category-image">
+                    <img src="./img/capsulas.png" alt="Café en Cápsula">
+                    <div class="category-overlay">
+                        <h3 class="category-name">Cápsula</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grano -->
+            <div class="category-card">
+                <div class="category-image">
+                    <img src="./img/grano.png" alt="Café en Grano">
+                    <div class="category-overlay">
+                        <h3 class="category-name">Grano</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Molido -->
+            <div class="category-card">
+                <div class="category-image">
+                    <img src="./img/molido.png" alt="Café Molido">
+                    <div class="category-overlay">
+                        <h3 class="category-name">Molido</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- Sección de Oferta Especial -->
+<section class="offer-section">
+    <div class="container">
+        <div class="offer-content">
+            <h2 class="offer-title">Consigue hasta un 25% de descuento</h2>
+            <p class="offer-description">-20% al gastar $100.000 o -25% al gastar $120.000. Usa el código <strong>AROMAS</strong></p>
+            <div class="offer-buttons">
+                <button class="offer-btn primary-btn">
+                    <i class="fas fa-shopping-cart"></i> Comprar
+                </button>
+                <button class="offer-btn secondary-btn">
+                    <i class="fas fa-info-circle"></i> Más Información
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="hero-image">
+    <div class="hero-overlay">
+        <div class="hero-text-content">
+            <p class="hero-description">Sumérgete en una experiencia única</p>
+            <h2 class="hero-main-title">Café Exquisito</h2>
+            <p class="hero-description">Despierta tus sentidos con cada sorbo</p>
+            <button class="hero-cta-btn">
+                <i class="fas fa-shopping-bag"></i> Comprar Ahora
+            </button>
+        </div>
+    </div>
+    <img src="./img/slider-image.jpg" alt="Café fresco y granos de café seleccionados - AromasCafé">
+</section>
+
+
+
+    <script src="js/app.js"></script>
+</body>
+</html>

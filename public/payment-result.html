@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado del Pago - Mi Ecommerce</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <h1><i class="fas fa-shopping-bag"></i> Mi Ecommerce</h1>
+            </div>
+            <div class="nav-actions">
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Volver a la Tienda
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="payment-result-container">
+                <div id="paymentResultContent" class="payment-result-content">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Verificando el resultado del pago...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .payment-result-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .payment-result-content {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .result-success {
+            color: #059669;
+        }
+
+        .result-error {
+            color: #dc2626;
+        }
+
+        .result-pending {
+            color: #d97706;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .result-details p {
+            margin: 0.5rem 0;
+        }
+
+        .result-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+
+    <script>
+        class PaymentResultPage {
+            constructor() {
+                this.checkPaymentResult();
+            }
+
+            async checkPaymentResult() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                
+                if (!token) {
+                    this.showError('No se encontró información del pago');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/flow/status/${token}`);
+                    const result = await response.json();
+                    
+                    if (result.success && result.flowStatus) {
+                        this.displayResult(result.flowStatus);
+                    } else {
+                        this.showError('Error al obtener información del pago');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showError('Error de conexión');
+                }
+            }
+
+            displayResult(paymentData) {
+                const container = document.getElementById('paymentResultContent');
+                const status = paymentData.status;
+                
+                if (status === 2) { // Pagado
+                    container.innerHTML = `
+                        <div class="result-success">
+                            <i class="fas fa-check-circle result-icon"></i>
+                            <h2>¡Pago Exitoso!</h2>
+                            <p>Tu compra fue procesada exitosamente</p>
+                        </div>
+                        <div class="result-details">
+                            <p><strong>Número de orden:</strong> ${paymentData.commerceOrder}</p>
+                            <p><strong>Total pagado:</strong> $${this.formatPrice(paymentData.amount)}</p>
+                            <p><strong>Fecha:</strong> ${new Date(paymentData.paymentDate).toLocaleString()}</p>
+                            <p><strong>Medio de pago:</strong> ${paymentData.paymentMethod || 'No especificado'}</p>
+                        </div>
+                        <div style="background: #f0fdf4; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                            <p style="color: #166534; margin: 0;">
+                                <i class="fas fa-info-circle"></i>
+                                Recibirás un email de confirmación con los detalles de tu pedido.
+                            </p>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag"></i>
+                                Continuar Comprando
+                            </a>
+                        </div>
+                    `;
+                } else if (status === 3) { // Rechazado
+                    container.innerHTML = `
+                        <div class="result-error">
+                            <i class="fas fa-times-circle result-icon"></i>
+                            <h2>Pago Rechazado</h2>
+                            <p>Tu pago no pudo ser procesado</p>
+                        </div>
+                        <div class="result-details">
+                            <p><strong>Número de orden:</strong> ${paymentData.commerceOrder}</p>
+                            <p><strong>Motivo:</strong> ${paymentData.statusMessage || 'Rechazado por el banco'}</p>
+                        </div>
+                        <div style="background: #fef2f2; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                            <p style="color: #991b1b; margin: 0;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                El pago fue rechazado. Puedes intentar nuevamente con otro medio de pago.
+                            </p>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-redo"></i>
+                                Intentar Nuevamente
+                            </a>
+                        </div>
+                    `;
+                } else { // Pendiente u otro estado
+                    container.innerHTML = `
+                        <div class="result-pending">
+                            <i class="fas fa-clock result-icon"></i>
+                            <h2>Pago Pendiente</h2>
+                            <p>Tu pago está siendo procesado</p>
+                        </div>
+                        <div class="result-details">
+                            <p><strong>Número de orden:</strong> ${paymentData.commerceOrder}</p>
+                            <p><strong>Estado:</strong> ${paymentData.statusMessage || 'Pendiente de confirmación'}</p>
+                        </div>
+                        <div style="background: #fffbeb; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                            <p style="color: #92400e; margin: 0;">
+                                <i class="fas fa-info-circle"></i>
+                                Te notificaremos por email cuando el pago sea confirmado.
+                            </p>
+                        </div>
+                        <div class="result-actions">
+                            <button onclick="location.reload()" class="btn btn-secondary">
+                                <i class="fas fa-sync"></i>
+                                Actualizar Estado
+                            </button>
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i>
+                                Volver a la Tienda
+                            </a>
+                        </div>
+                    `;
+                }
+            }
+
+            showError(message) {
+                const container = document.getElementById('paymentResultContent');
+                container.innerHTML = `
+                    <div class="result-error">
+                        <i class="fas fa-exclamation-triangle result-icon"></i>
+                        <h2>Error</h2>
+                        <p>${message}</p>
+                    </div>
+                    <div class="result-actions">
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-home"></i>
+                            Volver a la Tienda
+                        </a>
+                    </div>
+                `;
+            }
+
+            formatPrice(price) {
+                return new Intl.NumberFormat('es-CL').format(price);
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new PaymentResultPage();
+        });
+    </script>
+</body>
+</html>
