@@ -243,7 +243,7 @@ class EcommerceApp {
         if (allButton) {
             allButton.addEventListener('click', () => this.filterByCategory(''));
         }
-          if (category.toLowerCase() === 'accesorios') return;
+        //   if (category.toLowerCase() === 'accesorios') return;
         this.categories.forEach(category => {
             const button = document.createElement('button');
             button.className = 'filter-btn';
