@@ -237,22 +237,44 @@ class EcommerceApp {
         }
     }
 
-    renderCategoryFilters() {
-        const allButton = this.categoryFilters.querySelector('[data-category=""]');
+    // renderCategoryFilters() {
+    //     const allButton = this.categoryFilters.querySelector('[data-category=""]');
         
-        if (allButton) {
-            allButton.addEventListener('click', () => this.filterByCategory(''));
-        }
-        //   if (category.toLowerCase() === 'accesorios') return;
-        this.categories.forEach(category => {
-            const button = document.createElement('button');
-            button.className = 'filter-btn';
-            button.textContent = category;
-            button.dataset.category = category;
-            button.addEventListener('click', () => this.filterByCategory(category));
-            this.categoryFilters.appendChild(button);
-        });
+    //     if (allButton) {
+    //         allButton.addEventListener('click', () => this.filterByCategory(''));
+    //     }
+    //     //   if (category.toLowerCase() === 'accesorios') return;
+    //     this.categories.forEach(category => {
+    //         const button = document.createElement('button');
+    //         button.className = 'filter-btn';
+    //         button.textContent = category;
+    //         button.dataset.category = category;
+    //         button.addEventListener('click', () => this.filterByCategory(category));
+    //         this.categoryFilters.appendChild(button);
+    //     });
+    // }
+
+    renderCategoryFilters() {
+    const allButton = this.categoryFilters.querySelector('[data-category=""]');
+    
+    if (allButton) {
+        allButton.addEventListener('click', () => this.filterByCategory(''));
     }
+    
+    this.categories.forEach(category => {
+        // Filtrar la categoría "Accesorios" - SOLUCIÓN CORRECTA
+        if (category.toLowerCase() === 'accesorios') {
+            return; // Esto solo sale de esta iteración del forEach, no de toda la función
+        }
+        
+        const button = document.createElement('button');
+        button.className = 'filter-btn';
+        button.textContent = category;
+        button.dataset.category = category;
+        button.addEventListener('click', () => this.filterByCategory(category));
+        this.categoryFilters.appendChild(button);
+    });
+}
 
     filterByCategory(category) {
         this.currentCategory = category;
